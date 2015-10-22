@@ -1,80 +1,67 @@
-ALTER TABLE entitys ADD 
-ALTER TABLE entitys ADD 
-ALTER TABLE entitys ADD 
-ALTER TABLE entitys ADD 
 
-
-CREATE TABLE member (
-	member_id					serial primary key,
-	member_name					varchar(100) not null,
-	member_other_names			varchar(120) not null,
-	member_id_number			varchar(25) not null,
-	org_id						integer references orgs
-   	member_address				varchar(25),
-	member_village				varchar(25),
-	member_town 				varchar(50),
-	member_county				varchar(50),
-	member_primary_phone_no		varchar(50),
-	member_secondary_phone_no	varchar(50),
-	member_email				varchar(120),
-	member_entry_date			date not null default current_date,
-	member_entry_amount			real not null default 0,
-	member_start_date			date not null default current_date,
-	member_exit_amount			real not null default 0,
-	member_exit_date			date,
-	member_isactive				boolean default false not null,
-	member_details 				text,
-);
+ALTER TABLE entitys ADD entity_entry_amount	real not null default 0;
+ALTER TABLE entitys ADD entity_start_date	date not null default current_date;
+ALTER TABLE entitys ADD entity_exit_amount	real not null default 0;
+ALTER TABLE entitys ADD entity_exit_date	date;
 
 CREATE TABLE periods (
-	period_id					serial primary key,
+	period_id				serial primary key,
+	org_id					integer references orgs,
 	period_name        			varchar(50),
 	period_start_date			date not null,
 	period_end_date				date not null,
-	org_id						integer references orgs	
-	period_active				boolean default false not null,
+	period_closed				boolean default false not null,
 	period_details				text
 );
-CREATE TABLE contribution (
-	contribution_id				serial primary key,
-	contribution_name			varchar(50),
-	period_id					integer references periods,
-	entry_date                  date default current_date,
-	payroll						real not null,
-	org_id						integer references orgs
-	daily_contribution			real not null default 100,
-	total_contribution			real not null,
-	divided						real default 0 not null,
-	expenses       				real default 0,
-	narrative					varchar(240),
-	UNIQUE (member_id, period_id,org_id)
+
+CREATE TABLE contribution_types(
+	contribution_type_id			serial primary key,
+	contribution_type_name			varchar(20);
+	details					text
 );
 
-CREATE TABLE loan_type (
+INSERT INTO contribution_types(contribution_type_id, contribution_type_name) VALUES
+(1, 'Daily'),
+(2, 'Weekly'),
+(3, 'Monthly');
+
+CREATE TABLE contributions (
+	contribution_id				serial primary key,
+	org_id					integer references orgs,
+	entity_id				integer references entitys,
+	contribution_type_id			integer references contribution_types,
+	period_id				integer references periods,
+	deposit_date				date,
+	entry_date                  		timestamp default CURRENT_TIMESTAMP,
+	expenses       				real default 0,
+	narrative				varchar(255),
+	UNIQUE (entity_id, period_id,org_id)
+);
+
+CREATE TABLE loan_types (
 	loan_type_id				serial primary key,
+	org_id					integer references orgs,
 	loan_type_name				varchar(50),
-	loan_type_default_interest	integer,
-	org_id						integer references orgs
-	details						text
+	loan_type_default_interest		integer,
+	details					text
 );
 
 CREATE TABLE loans (
-	loan_id 					serial primary key,
-	loan_type_id				integer references loan_type,
-	loan_name					varchar (60)
-	member_id					integer references member,
-	org_id						integer references orgs
-	loan_date					date not null default current_date,
-	loans_principle				real not null,
-	loans_interest				real not null,
-	loans_weekly_repayment		real not null,
-	loan_monthly_repayment		real not null,
+	loan_id 				serial primary key,
+	loan_type_id				integer references loan_types,
+	entity_id				integer references member,
+	org_id					integer references orgs
+	loan_date				date not null default current_date,
+	loan_principle				real not null,
+	loan_interest				real not null,
+	loans_weekly_repayment			real not null,
+	loan_monthly_repayment			real not null,
 	expenses     				real not null,
-	period_id				 	integer references period,
+	period_id				integer references period,
 	repayment_period			integer not null CHECK (repayment_period > 0),
 	loan_approved				boolean not null default false,
-	interest_amount				 real default 0
-	details						text
+	interest_amount				real default 0
+	details					text
 );
 
 CREATE TABLE gurrantor (
