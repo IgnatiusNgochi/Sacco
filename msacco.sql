@@ -1,3 +1,8 @@
+ALTER TABLE entitys ADD 
+ALTER TABLE entitys ADD 
+ALTER TABLE entitys ADD 
+ALTER TABLE entitys ADD 
+
 
 CREATE TABLE member (
 	member_id					serial primary key,
