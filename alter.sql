@@ -1,6 +1,0 @@
-alter table entitys add entry_amount real not null default 0,
-alter table entitys add  exit_amount real CHECK (entry_amount> 0),
-alter table entitys add entry_date date not null default current_date,
-alter table entitys add exit_date date check (entry_date> exit date),
-alter table entitys add national_id_no varchar (89) not null,
-alter table entitys add secondary_telephone varchar (89) ,
